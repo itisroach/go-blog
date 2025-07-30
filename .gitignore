@@ -1,0 +1,24 @@
+# Compiled binaries and executables
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Go build artifacts
+/bin/
+/pkg/
+/vendor/
+
+# Operating system and editor-specific files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Temporary files and logs
+*.log
+*.tmp
+
+# Environment-specific configuration files
+.env
+config.local.json
