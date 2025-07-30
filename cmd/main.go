@@ -1,11 +1,12 @@
 package main
 
 import (
-	"fmt"
+	"os"
 
 	"github.com/itisroach/go-blog/config"
 	"github.com/itisroach/go-blog/database"
 	"github.com/itisroach/go-blog/migration"
+	"github.com/itisroach/go-blog/routes"
 )
 
 
@@ -16,5 +17,16 @@ func init() {
 }
 
 func main() {
-	fmt.Println("Hello World")
+	
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		port = "8080"
+	}
+
+
+	router := routes.SetupRouter()
+
+	router.Run(":" + port)
+
 }
