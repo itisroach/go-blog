@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/itisroach/go-blog/utils"
@@ -42,6 +41,6 @@ func (u *User) HashPassword() error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(*u)
+
 	return nil
 }
