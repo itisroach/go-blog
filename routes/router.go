@@ -1,19 +1,19 @@
 package routes
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/itisroach/go-blog/controllers"
+)
 
 func SetupRouter() *gin.Engine {
 
 	router := gin.Default()
 
 
-	router.GET("/" , func (c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "Hello World",
-		})
-	})
-
-
+	api := router.Group("/api")
+	{
+		api.POST("/auth/register", controllers.RegisterUser)
+	}
 
 	return router
 
