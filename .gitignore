@@ -22,3 +22,4 @@ Thumbs.db
 # Environment-specific configuration files
 .env
 config.local.json
+docs/
