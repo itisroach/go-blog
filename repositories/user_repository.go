@@ -27,5 +27,5 @@ func GetUser(username string) (*models.UserResponse, error) {
 		return nil, result.Error
 	}
 
-	return user.NewUserResponse(), nil
+	return models.NewUserResponse(user), nil
 }
