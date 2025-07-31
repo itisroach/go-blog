@@ -17,7 +17,7 @@ type User struct {
 
 
 type UserRequest struct {
-	Username 	string	`binding:"required,min=4,max=20"`
+	Username 	string `binding:"required,min=4,max=20"`
 	Name 		string 
 	Password	string `binding:"required,min=8,max=64"`
 }
@@ -59,4 +59,11 @@ func (u *UserRequest) HashPassword() error {
 	}
 
 	return nil
+}
+
+
+
+type LoginRequest struct {
+	Username 	string	`binding:"required,min=4,max=20"`
+	Password	string	`binding:"required,min=8,max=64"`
 }
