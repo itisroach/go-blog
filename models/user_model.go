@@ -3,7 +3,6 @@ package models
 import (
 	"time"
 
-	"github.com/itisroach/go-blog/utils"
 	"gorm.io/gorm"
 )
 
@@ -47,18 +46,6 @@ func (u *UserRequest) MakeUser() *User {
 		Username: u.Username,
 		Password: u.Password,
 	}
-}
-
-
-func (u *UserRequest) HashPassword() error {
-	var err error
-	u.Password, err = utils.HashString(u.Password)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 
