@@ -52,3 +52,36 @@ func RegisterUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, models.NewUserResponse(userInstance))
 
 }
+
+
+func LoginUser(c *gin.Context) {
+
+	var reqBody *models.LoginRequest
+	
+	if err := c.ShouldBindJSON(&reqBody); err != nil {
+
+		allErrors := utils.GenerateUserFriendlyError(err)
+
+		if allErrors == nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+	}
+
+
+	result, err := services.LoginService(reqBody)
+
+
+	if err != nil {
+		c.JSON(err.Code, gin.H{
+			"message": err.Message,
+		})
+	}
+
+
+	c.JSON(http.StatusCreated, result)
+	
+}
