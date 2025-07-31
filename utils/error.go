@@ -1,12 +1,13 @@
 package utils
 
 import (
+	"errors"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
 )
 
-func FormatError(fieldError validator.FieldError) string {
+func formatError(fieldError validator.FieldError) string {
 	field := strings.ToLower(fieldError.Field())
 
 	switch fieldError.Tag() {
@@ -21,6 +22,25 @@ func FormatError(fieldError validator.FieldError) string {
 	return field + " is invalid"
 }
 
+
+func GenerateUserFriendlyError(err error) *[]string {
+	// using field error validator from gorm
+	var validator validator.ValidationErrors
+
+	// convert the error to a user friendly error
+	if errors.As(err, &validator) {
+		out := make([]string, len(validator))
+
+		for i, fieldError := range validator {
+			out[i] = formatError(fieldError)
+		}
+			
+		
+		return &out
+	}
+
+	return nil
+}
 
 type CustomError struct {
 	Code 		int
