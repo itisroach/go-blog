@@ -10,9 +10,16 @@ import (
 type User struct {
 	gorm.Model
 	ID       int    `gorm:"primarykey"`
-	Username string `gorm:"uniqueindex:idx_username" binding:"required,min=4,max=20"`
+	Username string `gorm:"uniqueindex:idx_username"`
 	Name     string	`gorm:"default:Unknown"`
-	Password string `gorm:"<-:create" binding:"required,min=8,max=64"`
+	Password string `gorm:"<-:create"`
+}
+
+
+type UserRequest struct {
+	Username 	string	`binding:"required,min=4,max=20"`
+	Name 		string 
+	Password	string `binding:"required,min=8,max=64"`
 }
 
 
@@ -25,7 +32,7 @@ type UserResponse struct {
 }
 
 
-func (u *User) NewUserResponse() *UserResponse{
+func NewUserResponse(u *User) *UserResponse{
 	return &UserResponse{
 		Id:       u.ID,
 		Username: u.Username,
@@ -34,7 +41,16 @@ func (u *User) NewUserResponse() *UserResponse{
 }
 
 
-func (u *User) HashPassword() error {
+func (u *UserRequest) MakeUser() *User {
+	return &User{
+		Name: u.Name,
+		Username: u.Username,
+		Password: u.Password,
+	}
+}
+
+
+func (u *UserRequest) HashPassword() error {
 	var err error
 	u.Password, err = utils.HashString(u.Password)
 
