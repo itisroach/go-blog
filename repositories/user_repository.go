@@ -17,15 +17,19 @@ func CreateUser(user *models.User) error {
 }
 
 
-func GetUser(username string) (*models.UserResponse, error) {
+func GetUser(username string, needPassword bool) (*models.UserResponse, error, string) {
 	
 	var user *models.User
 
 	result := database.DB.First(&user, "username = ?", username) 
 
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, result.Error, ""
 	}
 
-	return models.NewUserResponse(user), nil
+	if needPassword {
+		return models.NewUserResponse(user), nil, user.Password
+	}
+
+	return models.NewUserResponse(user), nil, ""
 }
