@@ -11,43 +11,40 @@ import (
 	_ "github.com/itisroach/go-blog/docs"
 )
 
-// RegisterUser godoc
-// @Summary      Register a new user
-// @Description  Creates a new user account with a unique username
+// LoginUser godoc
+// @Summary      Login as an user
+// @Description  Login and save jwt tokens
 // @Tags         Auth
 // @Accept       json
 // @Produce      json
-// @Param        user  body      models.UserRequest  true  "User registration data"
-// @Success      201   {object}  models.UserResponse
+// @Param        user  body      models.LoginRequest  true  "Login user data"
+// @Success      201   {object}  models.JWTResponse
 // @Failure      400   {object}  map[string]interface{}
 // @Failure      409   {object}  map[string]string
-// @Router       /auth/register [post]
-func RegisterUser(c *gin.Context) {
+// @Router       /auth/login [post]
+func LoginUser(c *gin.Context) {
 
-	var reqBody *models.UserRequest
-
-	// check for errors in user body
+	var reqBody *models.LoginRequest
+	
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
-
 		allErrors := utils.GenerateUserFriendlyError(err)
-		
+
 		if allErrors == nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),
 			})
 			return
 		}
-
 		c.JSON(http.StatusBadRequest, gin.H{
 			"errors": allErrors,
 		})
 
-		return
-		
+		return 
 	}
 
 
-	userInstance, err := services.CreateUser(reqBody)
+	result, err := services.LoginService(reqBody)
+
 
 	if err != nil {
 		c.JSON(err.Code, gin.H{
@@ -55,7 +52,8 @@ func RegisterUser(c *gin.Context) {
 		})
 		return
 	}
-	
-	c.JSON(http.StatusCreated, models.NewUserResponse(userInstance))
 
+
+	c.JSON(http.StatusOK, result)
+	
 }
