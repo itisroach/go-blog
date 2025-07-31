@@ -20,3 +20,13 @@ func FormatError(fieldError validator.FieldError) string {
 
 	return field + " is invalid"
 }
+
+
+type CustomError struct {
+	Code 		int
+	Message		string
+}
+
+func (c *CustomError) Error() *CustomError {
+	return c
+}
