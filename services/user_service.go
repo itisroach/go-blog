@@ -19,8 +19,10 @@ func CreateUser(reqBody *models.UserRequest) (*models.User, *utils.CustomError) 
 			Message: "this username is already taken",
 		}
 	}
+	
+	var err error
 
-	if err := reqBody.HashPassword(); err != nil {
+	if reqBody.Password, err = utils.HashString(reqBody.Password); err != nil {
 
 		return nil, &utils.CustomError{
 			Code: http.StatusInternalServerError,
