@@ -1,0 +1,39 @@
+package services
+
+import (
+	"log"
+	"net/http"
+
+	"github.com/itisroach/go-blog/models"
+	"github.com/itisroach/go-blog/repositories"
+	"github.com/itisroach/go-blog/utils"
+)
+
+func CreateUser(reqBody *models.UserRequest) (*models.User, *utils.CustomError) {
+	userFound, _ := repositories.GetUser(reqBody.Username)
+
+	if userFound != nil {
+
+		return nil, &utils.CustomError{
+			Code: http.StatusConflict,
+			Message: "this username is already taken",
+		}
+	}
+
+	if err := reqBody.HashPassword(); err != nil {
+
+		return nil, &utils.CustomError{
+			Code: http.StatusInternalServerError,
+			Message: "it's not your fault, something went wrong",
+		}
+	}
+
+	userInstance := reqBody.MakeUser()
+
+	if err := repositories.CreateUser(userInstance); err != nil {
+		log.Fatal(err)
+	}
+
+	return userInstance, nil
+}
+
