@@ -57,3 +57,61 @@ func LoginUser(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 	
 }
+
+
+// RefreshToken  godoc
+// @Summary      Refresh access tokens
+// @Description  Refresh access tokens that are expire so user can stay logged in
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        user  body      models.JWTRefreshRequest  true  "refresh token"
+// @Success      201   {object}  models.JWTResponse
+// @Failure      400   {object}  map[string]interface{}
+// @Failure      409   {object}  map[string]string
+// @Router       /auth/refresh [post]
+func RefreshToken(c *gin.Context) {
+
+	var reqBody *models.JWTRefreshRequest
+
+	username, ok := c.Get("user")
+
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "authorization header missed, make sure you have a valid token in headers",
+		})
+		return
+	}
+
+
+	if err := c.ShouldBindJSON(&reqBody); err != nil{
+		allErrors := utils.GenerateUserFriendlyError(err)
+
+
+		if allErrors == nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors": allErrors,
+		})
+		return 
+	}
+
+
+	response, err := services.RefreshTokenService(reqBody, username.(string))
+	
+	if err != nil {
+		c.JSON(err.Code, gin.H{
+			"error": err.Message,
+		})
+		return
+	}
+
+
+	c.JSON(http.StatusOK, response)
+
+}
