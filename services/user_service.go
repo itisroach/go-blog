@@ -10,7 +10,7 @@ import (
 )
 
 func CreateUser(reqBody *models.UserRequest) (*models.User, *utils.CustomError) {
-	userFound, _ := repositories.GetUser(reqBody.Username)
+	userFound, _, _ := repositories.GetUser(reqBody.Username, false)
 
 	if userFound != nil {
 
@@ -37,3 +37,43 @@ func CreateUser(reqBody *models.UserRequest) (*models.User, *utils.CustomError) 
 	return userInstance, nil
 }
 
+
+
+func LoginService(reqBody *models.LoginRequest) (*models.JWTResponse, *utils.CustomError) {
+
+	user, err, password := repositories.GetUser(reqBody.Username, true)
+
+
+	if err != nil {
+		return nil, &utils.CustomError{
+			Code: http.StatusBadRequest,
+			Message: "username or password is wrong",
+		}
+	}
+
+	
+	isCorrect, _ := utils.ComparePassword(reqBody.Password, password)
+
+	if !isCorrect {
+		return nil, &utils.CustomError{
+			Code: http.StatusBadRequest,
+			Message: "username or password is wrong",
+		}
+	}
+
+
+	access, _ := utils.GenerateJWTToken(user.Username, false)
+	refresh, err := utils.GenerateJWTToken(user.Username, true)
+
+	if err != nil {
+		return nil, &utils.CustomError{
+			Code: http.StatusInternalServerError,
+			Message: "it's not your fault, something went wrong",
+		}
+	}
+
+	return &models.JWTResponse{
+		Access: access,
+		Refresh: refresh,
+	}, nil
+}
