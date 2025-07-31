@@ -2,19 +2,31 @@ package controllers
 
 import (
 	"errors"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/itisroach/go-blog/models"
-	"github.com/itisroach/go-blog/repositories"
+	"github.com/itisroach/go-blog/services"
 	"github.com/itisroach/go-blog/utils"
+
+	_ "github.com/itisroach/go-blog/docs"
 )
 
+// RegisterUser godoc
+// @Summary      Register a new user
+// @Description  Creates a new user account with a unique username
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        user  body      models.UserRequest  true  "User registration data"
+// @Success      201   {object}  models.UserResponse
+// @Failure      400   {object}  map[string]interface{}
+// @Failure      409   {object}  map[string]string
+// @Router       /auth/register [post]
 func RegisterUser(c *gin.Context) {
 
-	var reqBody *models.User
+	var reqBody *models.UserRequest
 
 	// check for errors in user body
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
@@ -43,33 +55,14 @@ func RegisterUser(c *gin.Context) {
 	}
 
 
-	userFound, _ := repositories.GetUser(reqBody.Username)
+	userInstance, err := services.CreateUser(reqBody)
 
-	if userFound != nil {
-
-		c.JSON(http.StatusConflict, gin.H{
-			"error": "username is already taken",
+	if err != nil {
+		c.JSON(err.Code, gin.H{
+			"message": err.Message,
 		})
-
-		return
 	}
-
-	if err := reqBody.HashPassword(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "it's not your fault, something went wrong",
-		})
-
-		return
-	}
-
-
-	if err := repositories.CreateUser(reqBody); err != nil {
-		log.Fatal(err)
-		
-	}
-
-
 	
-	c.JSON(http.StatusCreated, reqBody.NewUserResponse())
+	c.JSON(http.StatusCreated, models.NewUserResponse(userInstance))
 
 }
