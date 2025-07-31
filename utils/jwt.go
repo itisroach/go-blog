@@ -28,7 +28,7 @@ func GenerateJWTToken(username string, isRefresh bool) (string, error) {
 	default:
 		claim = jwt.MapClaims{
 			"username": username,
-			"exp": time.Now().Add(time.Hour * 24).Unix(),
+			"exp": time.Now().Add(time.Minute * 15).Unix(),
 			"type": "access",
 		}
 	}
