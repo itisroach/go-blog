@@ -1,11 +1,9 @@
 package controllers
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"github.com/itisroach/go-blog/models"
 	"github.com/itisroach/go-blog/services"
 	"github.com/itisroach/go-blog/utils"
@@ -31,27 +29,15 @@ func RegisterUser(c *gin.Context) {
 	// check for errors in user body
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
 
-		// using field error validator from gorm
-		var validator validator.ValidationErrors
-
-		// convert the error to a user friendly error
-		if errors.As(err, &validator) {
-			out := make([]string, len(validator))
-
-			for i, fieldError := range validator {
-				out[i] = utils.FormatError(fieldError)
-			}
-			
+		allErrors := utils.GenerateUserFriendlyError(err)
+		
+		if allErrors == nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"errors": out,
+				"error": err.Error(),
 			})
 			return
 		}
-
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-		return
+		
 	}
 
 
