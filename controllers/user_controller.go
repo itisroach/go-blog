@@ -37,6 +37,12 @@ func RegisterUser(c *gin.Context) {
 			})
 			return
 		}
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors": allErrors,
+		})
+
+		return
 		
 	}
 
@@ -47,19 +53,29 @@ func RegisterUser(c *gin.Context) {
 		c.JSON(err.Code, gin.H{
 			"message": err.Message,
 		})
+		return
 	}
 	
 	c.JSON(http.StatusCreated, models.NewUserResponse(userInstance))
 
 }
 
-
+// LoginUser godoc
+// @Summary      Login as an user
+// @Description  Login and save jwt tokens
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        user  body      models.LoginRequest  true  "Login user data"
+// @Success      201   {object}  models.JWTResponse
+// @Failure      400   {object}  map[string]interface{}
+// @Failure      409   {object}  map[string]string
+// @Router       /auth/login [post]
 func LoginUser(c *gin.Context) {
 
 	var reqBody *models.LoginRequest
 	
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
-
 		allErrors := utils.GenerateUserFriendlyError(err)
 
 		if allErrors == nil {
@@ -68,7 +84,11 @@ func LoginUser(c *gin.Context) {
 			})
 			return
 		}
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors": allErrors,
+		})
 
+		return 
 	}
 
 
@@ -79,9 +99,10 @@ func LoginUser(c *gin.Context) {
 		c.JSON(err.Code, gin.H{
 			"message": err.Message,
 		})
+		return
 	}
 
 
-	c.JSON(http.StatusCreated, result)
+	c.JSON(http.StatusOK, result)
 	
 }
