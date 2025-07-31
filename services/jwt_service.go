@@ -43,3 +43,49 @@ func LoginService(reqBody *models.LoginRequest) (*models.JWTResponse, *utils.Cus
 		Refresh: refresh,
 	}, nil
 }
+
+
+func RefreshTokenService(reqBody *models.JWTRefreshRequest, username string) (*models.JWTResponse ,*utils.CustomError) {
+
+	claims, err := utils.VerifyToken(reqBody.Token)
+
+
+	if err != nil {
+		return nil, err
+	}
+
+	if claims.Username != username {
+		return nil, &utils.CustomError{
+			Code: http.StatusForbidden,
+			Message: "you are not authorized to perform this action",
+		}
+	}
+
+
+	_, validErr := repositories.IsTokenValidInDB(reqBody.Token)
+
+	if validErr != nil {
+		return nil, &utils.CustomError{
+			Code: http.StatusBadRequest,
+			Message: validErr.Error(),
+		}
+	}
+
+
+	access, _ := utils.GenerateJWTToken(claims.Username, false)
+	refresh, tokenErr := utils.GenerateJWTToken(claims.Username, true)
+
+	if tokenErr != nil{
+		return nil, &utils.CustomError{
+			Code: http.StatusInternalServerError,
+			Message: "something went wrong, it's not your fault",
+		}
+	}
+	
+
+	return &models.JWTResponse{
+		Access: access,
+		Refresh: refresh,
+	}, nil
+	
+}
