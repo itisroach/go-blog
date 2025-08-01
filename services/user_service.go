@@ -39,3 +39,20 @@ func CreateUser(reqBody *models.UserRequest) (*models.User, *utils.CustomError) 
 	return userInstance, nil
 }
 
+
+
+func GetUserService(username string) (*models.UserResponse, *utils.CustomError) {
+
+	userObj, err , _ := repositories.GetUser(username, false)
+
+
+	if err != nil {
+		return nil, &utils.CustomError{
+			Code: 404,
+			Message: err.Error(),
+		}
+	}
+
+	return userObj, nil
+}
+
