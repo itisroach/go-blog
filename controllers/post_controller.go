@@ -60,7 +60,7 @@ func GetPosts(c *gin.Context) {
 // @Success      200   		{object}  []models.PostResponse
 // @Success      204   		{object}  map[string]interface{}
 // @Failure      500   		{object}  map[string]interface{}
-// @Router       /posts/{username} [GET]
+// @Router       /users/posts/{username} [GET]
 func GetUsersPost(c *gin.Context){
 	page := c.DefaultQuery("page", "1")
 
