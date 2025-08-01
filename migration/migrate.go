@@ -10,7 +10,7 @@ import (
 
 func MakeMigrations() {
 
-	if err := database.DB.AutoMigrate(&models.User{}, &models.RefreshToken{}); err != nil {
+	if err := database.DB.AutoMigrate(&models.User{}, &models.RefreshToken{}, &models.Post{}); err != nil {
 		log.Fatal("migrations failed")
 		os.Exit(1)
 	}
