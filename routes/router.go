@@ -26,6 +26,8 @@ func SetupRouter() *gin.Engine {
 		protected.GET("/users/:username", controllers.GetUser)
 
 		protected.POST("/posts/write", controllers.NewPost)
+
+		protected.GET("/users/posts/:username", controllers.GetUsersPost)
 	}
 
 	return router
