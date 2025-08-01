@@ -10,7 +10,6 @@ import (
 	"github.com/itisroach/go-blog/utils"
 )
 
-
 // GetPosts godoc
 // @Summary      Fetches all posts in database
 // @Description  Fetches all posts in database but with limit
@@ -19,6 +18,7 @@ import (
 // @Produce      json
 // @Param        page  query     int  false  "Page pagination"
 // @Success      200   {object}  []models.PostResponse
+// @Success      209   {object}  map[string]interface{}
 // @Failure      500   {object}  map[string]interface{}
 // @Router       /posts [GET]
 func GetPosts(c *gin.Context) {
@@ -48,6 +48,48 @@ func GetPosts(c *gin.Context) {
 	c.JSON(http.StatusOK, posts)
 }
 
+
+// GetUsersPosts godoc
+// @Summary      Fetches all user's posts in database
+// @Description  Fetches all user's posts in database but with limit
+// @Tags         Post
+// @Accept       json
+// @Produce      json
+// @Param        page  		query     int  		false  "Page pagination"
+// @param		 username	path	  string	true   "Username"
+// @Success      200   		{object}  []models.PostResponse
+// @Success      204   		{object}  map[string]interface{}
+// @Failure      500   		{object}  map[string]interface{}
+// @Router       /posts/{username} [GET]
+func GetUsersPost(c *gin.Context){
+	page := c.DefaultQuery("page", "1")
+
+	pageNum, err := strconv.Atoi(page)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "page query argument most be an int",
+		})
+		return
+	}
+
+	username := c.Param("username")
+
+	var postErr *utils.CustomError
+
+	posts, postErr := services.GetPostsService(pageNum, username)
+
+	if postErr != nil {
+
+		c.JSON(postErr.Code, gin.H{
+			"error": postErr.Message,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, posts)
+}
+
 // GetPost godoc
 // @Summary      Fetches a specific post in database
 // @Description  Fetches a specific post in database
@@ -56,7 +98,7 @@ func GetPosts(c *gin.Context) {
 // @Produce      json
 // @Param        id    path     int  true  "Post id"
 // @Success      200   {object}  []models.PostResponse
-// @Success      404   {object}  []models.PostResponse
+// @Success      404   {object}  map[string]interface{}
 // @Failure      500   {object}  map[string]interface{}
 // @Router       /posts/{id} [GET]
 func GetPost(c *gin.Context) {
