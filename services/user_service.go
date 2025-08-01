@@ -43,7 +43,7 @@ func CreateUser(reqBody *models.UserRequest) (*models.User, *utils.CustomError) 
 
 func GetUserService(username string) (*models.UserResponse, *utils.CustomError) {
 
-	userObj, err , _ := repositories.GetUser(username, false)
+	userObj, _ , err := repositories.GetUser(username, false)
 
 
 	if err != nil {

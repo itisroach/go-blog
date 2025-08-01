@@ -10,7 +10,7 @@ import (
 
 func LoginService(reqBody *models.LoginRequest) (*models.JWTResponse, *utils.CustomError) {
 
-	user, err, password := repositories.GetUser(reqBody.Username, true)
+	user, password, err := repositories.GetUser(reqBody.Username, true)
 
 	if err != nil {
 		return nil, &utils.CustomError{
