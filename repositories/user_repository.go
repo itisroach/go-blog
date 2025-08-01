@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"errors"
+
 	"github.com/itisroach/go-blog/database"
 	"github.com/itisroach/go-blog/models"
 )
@@ -25,6 +27,10 @@ func GetUser(username string, needPassword bool) (*models.UserResponse, error, s
 
 	if result.Error != nil {
 		return nil, result.Error, ""
+	}
+
+	if result.RowsAffected == 0 {
+		return nil, errors.New("user not found"), ""
 	}
 
 	if needPassword {
