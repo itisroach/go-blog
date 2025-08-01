@@ -13,7 +13,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		authHeader := ctx.GetHeader("authorization")
 
 		if !strings.HasPrefix(authHeader,"Bearer ") {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Bearer format should be used"})
 			ctx.Abort()
 			return
 		}
