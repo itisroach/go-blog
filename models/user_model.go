@@ -36,6 +36,8 @@ func NewUserResponse(u *User) *UserResponse{
 		Id:       u.ID,
 		Username: u.Username,
 		Name:     u.Name,
+		CreatedAt: u.CreatedAt,
+		UpdatedAt: u.UpdatedAt,
 	}
 }
 
