@@ -19,6 +19,8 @@ func SetupRouter() *gin.Engine {
 		protected.Use(middlewares.AuthMiddleware())
 		
 		protected.POST("/auth/refresh", controllers.RefreshToken)
+
+		protected.GET("/users/:username", controllers.GetUser)
 	}
 
 	return router
