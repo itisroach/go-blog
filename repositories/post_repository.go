@@ -29,7 +29,7 @@ func GetPosts(page int, username string) (*[]models.PostResponse ,error) {
 
 	offset := (page - 1) * pageSize
 	
-	var posts *[]models.Post
+	var posts []models.Post
 	
 	var err error;
 
@@ -43,14 +43,14 @@ func GetPosts(page int, username string) (*[]models.PostResponse ,error) {
     	Where("users.username = ?", username).
 		Limit(pageSize).
 		Offset(offset).
-		Find(&posts, "user.username = ?", username).Error
+		Find(&posts).Error
 	}
 
-	if username != "" && len(*posts) == 0 {
+	if username != "" && len(posts) == 0 {
 		return nil, errors.New("user does not have any posts")
 	}
 	
-	if len(*posts) == 0 {
+	if len(posts) == 0 {
 		return nil, errors.New("we don't have any posts for now")
 	}
 	
@@ -60,7 +60,7 @@ func GetPosts(page int, username string) (*[]models.PostResponse ,error) {
 
 	var result []models.PostResponse
 
-	for _, post := range *posts {
+	for _, post := range posts {
 		result = append(result, *models.MakePostResponse(&post))
 	}
 
@@ -70,7 +70,7 @@ func GetPosts(page int, username string) (*[]models.PostResponse ,error) {
 
 func GetSinglePost(id int) (*models.PostResponse, error) {
 
-	var post *models.Post
+	var post models.Post
 
 	err := database.DB.Preload("User").Where("id = ?", id).First(&post).Error
 
@@ -82,6 +82,6 @@ func GetSinglePost(id int) (*models.PostResponse, error) {
 		return nil, errors.New("failed to fetch posts")
 	}
 
-	return models.MakePostResponse(post), nil
+	return models.MakePostResponse(&post), nil
 
 }
