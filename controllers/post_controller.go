@@ -23,8 +23,6 @@ import (
 // @Router       /posts [GET]
 func GetPosts(c *gin.Context) {
 
-	
-
 	page := c.DefaultQuery("page", "1")
 
 	pageNum, err := strconv.Atoi(page)
@@ -38,7 +36,7 @@ func GetPosts(c *gin.Context) {
 
 	var postErr *utils.CustomError
 
-	posts, postErr := services.GetPostsService(pageNum)
+	posts, postErr := services.GetPostsService(pageNum, "")
 
 	if postErr != nil {
 		c.JSON(postErr.Code, gin.H{
@@ -50,6 +48,42 @@ func GetPosts(c *gin.Context) {
 	c.JSON(http.StatusOK, posts)
 }
 
+// GetPost godoc
+// @Summary      Fetches a specific post in database
+// @Description  Fetches a specific post in database
+// @Tags         Post
+// @Accept       json
+// @Produce      json
+// @Param        id    path     int  true  "Post id"
+// @Success      200   {object}  []models.PostResponse
+// @Success      404   {object}  []models.PostResponse
+// @Failure      500   {object}  map[string]interface{}
+// @Router       /posts/{id} [GET]
+func GetPost(c *gin.Context) {
+	
+	postId := c.Param("id")
+
+
+	postIdInt, err := strconv.Atoi(postId)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "id, route parameter most be an int",
+		})
+		return
+	}
+
+	post, postErr := services.GetPost(postIdInt)
+
+	if postErr != nil {
+		c.JSON(postErr.Code, gin.H{
+			"error": postErr.Message,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, post)
+}
 
 
 // NewPost godoc
