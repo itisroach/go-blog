@@ -2,12 +2,55 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/itisroach/go-blog/models"
 	"github.com/itisroach/go-blog/services"
 	"github.com/itisroach/go-blog/utils"
 )
+
+
+// GetPosts godoc
+// @Summary      Fetches all posts in database
+// @Description  Fetches all posts in database but with limit
+// @Tags         Post
+// @Accept       json
+// @Produce      json
+// @Param        page  query     int  false  "Page pagination"
+// @Success      200   {object}  []models.PostResponse
+// @Failure      500   {object}  map[string]interface{}
+// @Router       /posts [GET]
+func GetPosts(c *gin.Context) {
+
+	
+
+	page := c.DefaultQuery("page", "1")
+
+	pageNum, err := strconv.Atoi(page)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "page query argument most be an int",
+		})
+		return
+	}
+
+	var postErr *utils.CustomError
+
+	posts, postErr := services.GetPostsService(pageNum)
+
+	if postErr != nil {
+		c.JSON(postErr.Code, gin.H{
+			"error": postErr.Message,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, posts)
+}
+
+
 
 // NewPost godoc
 // @Summary      Write a new post
