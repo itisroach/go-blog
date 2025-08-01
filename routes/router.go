@@ -16,7 +16,7 @@ func SetupRouter() *gin.Engine {
  		api.POST("/auth/login", controllers.LoginUser)
 		
 		api.GET("/posts", controllers.GetPosts)
-		api.GET("/posts/:id", controllers.GetPost)
+		
 		
 		protected := api.Group("/")
 		protected.Use(middlewares.AuthMiddleware())
@@ -28,6 +28,8 @@ func SetupRouter() *gin.Engine {
 		protected.POST("/posts/write", controllers.NewPost)
 
 		protected.GET("/users/posts/:username", controllers.GetUsersPost)
+
+		api.GET("/posts/:id", controllers.GetPost)
 	}
 
 	return router
