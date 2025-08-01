@@ -41,6 +41,7 @@ func GetPosts(page int, username string) (*[]models.PostResponse ,error) {
 		err = database.DB.
 		Joins("JOIN users ON users.id = posts.user_id").
     	Where("users.username = ?", username).
+		Preload("User").
 		Limit(pageSize).
 		Offset(offset).
 		Find(&posts).Error
