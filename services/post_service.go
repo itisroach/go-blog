@@ -2,6 +2,7 @@ package services
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/itisroach/go-blog/models"
 	"github.com/itisroach/go-blog/repositories"
@@ -9,14 +10,20 @@ import (
 )
 
 
-func GetPostsService(page int) (*[]models.PostResponse, *utils.CustomError) {
+func GetPostsService(page int, username string) (*[]models.PostResponse, *utils.CustomError) {
 
-	posts, err := repositories.GetPosts(page)
+	posts, err := repositories.GetPosts(page, username)
 
 
 	if err != nil {
+		code := http.StatusInternalServerError
+
+		if strings.Contains(err.Error(), "any posts") {
+			code = http.StatusNoContent 
+		}
+
 		return nil, &utils.CustomError{
-			Code: http.StatusInternalServerError,
+			Code: code,
 			Message: err.Error(),
 		}
 	}
@@ -24,6 +31,26 @@ func GetPostsService(page int) (*[]models.PostResponse, *utils.CustomError) {
 
 	return posts, nil
 
+}
+
+
+func GetPost(id int) (*models.PostResponse, *utils.CustomError) {
+	post, err := repositories.GetSinglePost(id)
+
+	if err != nil {
+		code := http.StatusInternalServerError
+
+		if strings.Contains(err.Error(), "found") {
+			code = http.StatusNotFound
+		}
+
+		return nil, &utils.CustomError{
+			Code: code,
+			Message: err.Error(),
+		}
+	}
+
+	return post, nil
 }
 
 
