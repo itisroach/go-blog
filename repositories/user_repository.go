@@ -33,3 +33,16 @@ func GetUser(username string, needPassword bool) (*models.UserResponse, string, 
 
 	return models.NewUserResponse(user), "", nil
 }
+
+func GetUserRawData(username string) (*models.User, error) {
+	var user *models.User
+
+	result := database.DB.First(&user, "username = ?", username) 
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+
+	return user, nil
+}
