@@ -18,9 +18,8 @@ import (
 // @Accept       json
 // @Produce      json
 // @Param        user  body      models.LoginRequest  true  "Login user data"
-// @Success      201   {object}  models.JWTResponse
+// @Success      200   {object}  models.JWTResponse
 // @Failure      400   {object}  map[string]interface{}
-// @Failure      409   {object}  map[string]string
 // @Router       /auth/login [post]
 func LoginUser(c *gin.Context) {
 
