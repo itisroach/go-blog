@@ -21,6 +21,8 @@ func SetupRouter() *gin.Engine {
 		protected.POST("/auth/refresh", controllers.RefreshToken)
 
 		protected.GET("/users/:username", controllers.GetUser)
+
+		protected.POST("/posts/write", controllers.NewPost)
 	}
 
 	return router
