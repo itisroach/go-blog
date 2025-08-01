@@ -63,9 +63,10 @@ func VerifyToken(token string) (*models.TokenClaims, *CustomError) {
 
 
 	if err != nil {
+
 		return nil, &CustomError{
-			Code: http.StatusInternalServerError,
-			Message: "error while parsing token",
+			Code: http.StatusBadRequest,
+			Message: err.Error(),
 		}
 	}
 
