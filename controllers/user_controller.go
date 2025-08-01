@@ -59,3 +59,32 @@ func RegisterUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, models.NewUserResponse(userInstance))
 
 }
+
+
+
+// GetUser godoc
+// @Summary      Fetches a user
+// @Description  Fetches a user by their username
+// @Tags         User
+// @Accept       json
+// @Produce      json
+// @Param        username  path  	 string  true  "Username"
+// @Success      200   	   {object}  models.UserResponse
+// @Failure      404       {object}  map[string]interface{}
+// @Router       /users/{username} [GET]
+func GetUser(c *gin.Context) {
+
+	username := c.Param("username")
+
+	user, err := services.GetUserService(username)
+
+
+	if err != nil {
+		c.JSON(err.Code, gin.H{
+			"message": err.Message,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
+}
