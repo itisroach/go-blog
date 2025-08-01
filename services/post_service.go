@@ -8,6 +8,25 @@ import (
 	"github.com/itisroach/go-blog/utils"
 )
 
+
+func GetPostsService(page int) (*[]models.PostResponse, *utils.CustomError) {
+
+	posts, err := repositories.GetPosts(page)
+
+
+	if err != nil {
+		return nil, &utils.CustomError{
+			Code: http.StatusInternalServerError,
+			Message: err.Error(),
+		}
+	}
+
+
+	return posts, nil
+
+}
+
+
 func CreatePostService(reqBody *models.PostRequest) (*models.Post, *utils.CustomError) {
 	
 	user, err := repositories.GetUserRawData(reqBody.Username)	
