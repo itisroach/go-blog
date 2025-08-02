@@ -195,6 +195,7 @@ func NewPost(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        post  body      models.UpdatePostRequest  true  "Post data"
+// @Param        id    path      int  true  "Post id"
 // @Success      200   {object}  models.PostResponse
 // @Failure      400   {object}  map[string]interface{}
 // @Failure      404   {object}  map[string]interface{}
@@ -244,4 +245,53 @@ func UpdatePost(c *gin.Context) {
 
 
 	c.JSON(http.StatusOK, result)
+}
+
+
+
+// DeletePost    godoc
+// @Summary      Delete an existed post
+// @Description  Delete an existed post
+// @Tags         Post
+// @Accept       json
+// @Produce      json
+// @Param        id    path      int  true  "Post id"
+// @Success      204   {object}	 nil
+// @Failure      400   {object}  map[string]interface{}
+// @Failure      404   {object}  map[string]interface{}
+// @Router       /posts/{id} [DELETE]
+func DeletePost(c *gin.Context) {
+
+	username, ok := c.Get("user")
+
+	postId := c.Param("id")
+
+	postIdInt, err := strconv.Atoi(postId)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "id, route parameter most be an int",
+		})
+		return
+	}
+
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "authorization header missed, make sure you have a valid token in headers",
+		})
+		return
+	}
+
+
+	deletErr := services.DeletePostService(postIdInt, username.(string))
+
+	if deletErr != nil {
+		c.JSON(deletErr.Code, gin.H{
+			"error": deletErr.Message,
+		})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+
 }
