@@ -6,6 +6,7 @@ import (
 	"github.com/itisroach/go-blog/database"
 	"github.com/itisroach/go-blog/models"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func CreatePost(post *models.Post) error {
@@ -81,6 +82,55 @@ func GetSinglePost(id int) (*models.PostResponse, error) {
 
 	if err != nil {
 		return nil, errors.New("failed to fetch posts")
+	}
+
+	return models.MakePostResponse(&post), nil
+
+}
+
+
+
+func UpdatePost(payload models.UpdatePostRequest ,id int, username string) (*models.PostResponse, error) {
+
+	var post models.Post
+
+	updates := make(map[string]interface{})
+
+	if payload.Title != "" {
+		updates["title"] = payload.Title
+	}
+
+	if payload.Body != "" {
+		updates["body"] = payload.Body
+	}
+
+	if len(updates) == 0 {
+		return nil, errors.New("no fields specified to update")
+	}
+
+
+	err := database.DB.
+		Model(&post).
+		Clauses(
+			clause.From{Tables: []clause.Table{{Name: "users"}}},                          
+		).
+		Where("posts.id = ? AND posts.user_id = users.id AND users.username = ?", id, username).
+		Updates(updates).Error 
+
+
+	if err != nil {
+		return nil, err
+	}
+
+
+	err = database.DB.
+		Joins("JOIN users ON users.id = posts.user_id").
+		Where("posts.id = ? AND users.username = ?", id, username).
+		Preload("User").
+		First(&post).Error
+
+	if err != nil {
+		return nil, err
 	}
 
 	return models.MakePostResponse(&post), nil
