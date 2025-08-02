@@ -11,9 +11,10 @@ import (
 func AuthMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authHeader := ctx.GetHeader("authorization")
+		
 
-		if !strings.HasPrefix(authHeader,"Bearer ") {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Bearer format should be used"})
+		if authHeader == "" || !strings.HasPrefix(authHeader,"Bearer ") {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "authorization header not provided or Bearer format should be used"})
 			ctx.Abort()
 			return
 		}
