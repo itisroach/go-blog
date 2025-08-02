@@ -20,6 +20,10 @@ type PostRequest struct {
 	Body		string	`binding:"required,min=24"`
 }
 
+type UpdatePostRequest struct {
+	Title		string
+	Body		string
+}
 
 type PostResponse struct {
 	ID 			uint
