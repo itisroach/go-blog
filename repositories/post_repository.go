@@ -136,3 +136,22 @@ func UpdatePost(payload models.UpdatePostRequest ,id int, username string) (*mod
 	return models.MakePostResponse(&post), nil
 
 }
+
+
+
+func DeletePost(id int, username string) error {
+
+	result := database.DB.
+	Clauses(
+		clause.From{Tables: []clause.Table{{Name: "users"}}},                          
+	).
+	Where("posts.id = ? AND posts.user_id = users.id AND users.username = ?", id, username).
+	Delete(&models.Post{})
+
+	if result.RowsAffected == 0 {
+		return errors.New("record not found")
+	}
+
+
+	return nil
+}
