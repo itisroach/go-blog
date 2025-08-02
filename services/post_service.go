@@ -105,3 +105,26 @@ func UpdatePostService(reqBody *models.UpdatePostRequest, postId int, username s
 
 	return updatedPost, nil
 }
+
+
+
+func DeletePostService(postId int, username string) *utils.CustomError {
+	
+	err := repositories.DeletePost(postId, username)
+
+	if err != nil {
+
+		var message string
+
+		if strings.Contains(err.Error(), "not found") {
+			message = "the record not found or you don not own this post"
+		}
+		return &utils.CustomError{
+			Code: http.StatusNotFound,
+			Message: message,
+		}
+	}
+
+
+	return nil
+}
