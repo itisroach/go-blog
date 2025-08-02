@@ -16,7 +16,6 @@ type Post struct {
 
 
 type PostRequest struct {
-	Username 	string
 	Title		string	`binding:"required,min=8,max=128"`
 	Body		string	`binding:"required,min=24"`
 }

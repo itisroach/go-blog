@@ -152,8 +152,6 @@ func NewPost(c *gin.Context) {
 		return
 	}
 
-	reqBody.Username = username.(string)
-
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
 		
 		allErrors := utils.GenerateUserFriendlyError(err)
@@ -172,7 +170,7 @@ func NewPost(c *gin.Context) {
 		return
 	}
 
-	result, err := services.CreatePostService(reqBody)
+	result, err := services.CreatePostService(reqBody, username.(string))
 
 
 	if err != nil {

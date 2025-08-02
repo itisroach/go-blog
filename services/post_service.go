@@ -54,9 +54,9 @@ func GetPost(id int) (*models.PostResponse, *utils.CustomError) {
 }
 
 
-func CreatePostService(reqBody *models.PostRequest) (*models.Post, *utils.CustomError) {
+func CreatePostService(reqBody *models.PostRequest, username string) (*models.Post, *utils.CustomError) {
 	
-	user, err := repositories.GetUserRawData(reqBody.Username)	
+	user, err := repositories.GetUserRawData(username)	
 
 	
 	if err != nil {
