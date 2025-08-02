@@ -186,3 +186,62 @@ func NewPost(c *gin.Context) {
 	c.JSON(http.StatusCreated, post)
 
 }
+
+
+// UpdatePost godoc
+// @Summary      Update an existed post
+// @Description  Update an existed post
+// @Tags         Post
+// @Accept       json
+// @Produce      json
+// @Param        post  body      models.UpdatePostRequest  true  "Post data"
+// @Success      200   {object}  models.PostResponse
+// @Failure      400   {object}  map[string]interface{}
+// @Failure      404   {object}  map[string]interface{}
+// @Router       /posts/{id}/update [post]
+func UpdatePost(c *gin.Context) {
+
+	reqBody := &models.UpdatePostRequest{} 
+
+	username, ok := c.Get("user")
+
+	postId := c.Param("id")
+
+	postIdInt, err := strconv.Atoi(postId)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "id, route parameter most be an int",
+		})
+		return
+	}
+
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "authorization header missed, make sure you have a valid token in headers",
+		})
+		return
+	}
+
+	if err := c.ShouldBindJSON(&reqBody); err != nil {
+		
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+		
+	}
+
+	result, postErr := services.UpdatePostService(reqBody, postIdInt, username.(string))
+
+
+	if postErr != nil {
+		c.JSON(postErr.Code, gin.H{
+			"error": postErr.Message,
+		})
+		return
+	}
+
+
+	c.JSON(http.StatusOK, result)
+}
