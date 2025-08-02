@@ -80,3 +80,28 @@ func CreatePostService(reqBody *models.PostRequest, username string) (*models.Po
 
 	return postInstanace, nil
 }
+
+
+
+
+func UpdatePostService(reqBody *models.UpdatePostRequest, postId int, username string) (*models.PostResponse, *utils.CustomError) {
+
+	updatedPost, err := repositories.UpdatePost(*reqBody, postId, username)
+
+
+	if err != nil {
+
+		var message string
+
+		if strings.Contains(err.Error(), "not found") {
+			message = "the record not found or you don not own this post"
+		}
+		return nil, &utils.CustomError{
+			Code: http.StatusNotFound,
+			Message: message,
+		}
+	}
+
+
+	return updatedPost, nil
+}
